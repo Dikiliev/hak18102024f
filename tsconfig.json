@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler",
+    "baseUrl": "./",
+    "paths": {
+      "@src/*": ["src/*"],
+      "@admin/*": ["src/admin/*"],
+      "@api/*": ["src/api/*"],
+      "@components/*": ["src/components/*"],
+      "@pages/*": ["src/pages/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "types/*": ["src/types/*"],
+      "@styles/*": ["src/styles/*"],
+      "@models/*": ["src/models/*"],
+      "@stores/*": ["src/stores/*"],
+      "@assets/*": ["src/assets/*"],
+      "@utils/*": ["src/utils/*"],
+    }
+  },
+  "include": ["src", "server", "vite.config.ts"]
+}
