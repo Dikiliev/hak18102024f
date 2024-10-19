@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import {Container, Grid, Typography, TextField, Button, CircularProgress, Alert, Box, Paper} from '@mui/material';
-import { fetchApplicationType, submitApplication } from '@api/applications';
+import { fetchApplicationType, submitApplication } from '../api/applications';
 import { useParams, useNavigate } from 'react-router-dom';
 
 interface ApplicationField {
@@ -66,10 +66,10 @@ const SubmitApplicationForm: React.FC = () => {
         }));
     };
 
-    const handleFileChange = (fieldId: number, file: File) => {
+    const handleFileChange = (name: string, file: File) => {
         setFileData((prevData) => ({
             ...prevData,
-            [fieldId]: file,
+            [name]: file,
         }));
     };
 
@@ -129,7 +129,7 @@ const SubmitApplicationForm: React.FC = () => {
                                         <input
                                             type="file"
                                             accept=".pdf,.doc,.docx"
-                                            onChange={(e) => handleFileChange(field.id, e.target.files![0])}
+                                            onChange={(e) => handleFileChange(field.name, e.target.files![0])}
                                         />
                                     </>
                                 )}
@@ -140,7 +140,7 @@ const SubmitApplicationForm: React.FC = () => {
                                         <input
                                             type="file"
                                             accept=".jpg,.png"
-                                            onChange={(e) => handleFileChange(field.id, e.target.files![0])}
+                                            onChange={(e) => handleFileChange(field.name, e.target.files![0])}
                                         />
                                     </>
                                 )}
@@ -151,7 +151,7 @@ const SubmitApplicationForm: React.FC = () => {
                                         <input
                                             type="file"
                                             accept=".jpg,.png"
-                                            onChange={(e) => handleFileChange(field.id, e.target.files![0])}
+                                            onChange={(e) => handleFileChange(field.name, e.target.files![0])}
                                         />
                                     </>
                                 )}

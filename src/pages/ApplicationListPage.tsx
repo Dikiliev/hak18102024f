@@ -11,13 +11,15 @@ import {
     Button,
     CircularProgress,
     Alert,
-    Chip
+    Chip, Card
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CloseIcon from '@mui/icons-material/Close';
 import { fetchApplications, revokeApplication, downloadApplication } from '@api/applications';
 import theme from "@styles/theme";
+import {getAbsoluteUrl} from "../utils/url";
+import ApplicationAccordion from "../components/applications/ApplicationAccordion";
 
 const ApplicationListPage: React.FC = () => {
     const [expanded, setExpanded] = useState<number | false>(false);
@@ -50,21 +52,6 @@ const ApplicationListPage: React.FC = () => {
         downloadMutation.mutate(documentUrl);
     };
 
-    const renderStatusChip = (status: string) => {
-        switch (status) {
-            case 'created':
-                return <Chip label="Создано" color="primary" icon={<CheckCircleIcon />} />;
-            case 'under_review':
-                return <Chip label="Проверяется" color="warning" />;
-            case 'in_progress':
-                return <Chip label="В процессе" color="info" />;
-            case 'completed':
-                return <Chip label="Готово" color="success" icon={<CheckCircleIcon />} />;
-            default:
-                return <Chip label="Неизвестно" />;
-        }
-    };
-
     if (isLoading) {
         return (
             <Container maxWidth="md" sx={{ py: 6, textAlign: 'center' }}>
@@ -89,40 +76,13 @@ const ApplicationListPage: React.FC = () => {
             </Typography>
 
             {data?.map((application, index) => (
-                <Accordion
-                    key={application.id}
-                    expanded={expanded === index}
-                    onChange={handleAccordionChange(index)}
-                    sx={{ borderRadius: 1, mb: 2, backgroundColor: theme.palette.background.paper, overflow: 'hidden' }}
-                >
-                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                        <Grid container alignItems="center" spacing={2}>
-                            <Grid item xs={6}>
-                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                    {application.application_type.name}
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={3}>
-                                {renderStatusChip(application.status)}
-                            </Grid>
-                            <Grid item xs={3}>
-                                <Typography variant="body2" color="textSecondary">
-                                    {new Date(application.submission_date).toLocaleDateString()}
-                                </Typography>
-                            </Grid>
-                        </Grid>
-                    </AccordionSummary>
-
-                    <AccordionDetails>
-                        <Box mb={2}>
-                            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Детали заявления:</Typography>
-                            {Object.entries(JSON.parse(application.fields_data)).map(([field, value], idx) => (
-                                <Typography key={idx}>
-                                    {field}: {value as string}
-                                </Typography>
-                            ))}
-                        </Box>
-
+                <Box key={application.id}>
+                    <ApplicationAccordion
+                        application={application}
+                        expanded={expanded}
+                        handleAccordionChange={handleAccordionChange(index)}
+                        index={index}
+                    >
                         <Box display="flex" justifyContent="space-between" alignItems="center">
                             {application.status === 'completed' && application.ready_document ? (
                                 <Button
@@ -131,7 +91,7 @@ const ApplicationListPage: React.FC = () => {
                                     onClick={() => handleDownload(application.ready_document)}
                                     sx={{ mr: 2 }}
                                 >
-                                    Скачать документ
+                                    Скачать готовый документ
                                 </Button>
                             ) : (
                                 <Button
@@ -145,8 +105,8 @@ const ApplicationListPage: React.FC = () => {
                                 </Button>
                             )}
                         </Box>
-                    </AccordionDetails>
-                </Accordion>
+                    </ApplicationAccordion>
+                </Box>
             ))}
         </Container>
     );

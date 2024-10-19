@@ -7,7 +7,7 @@ interface IApplicationTypeResponse {
     description: string;
 }
 
-interface IApplicationResponse {
+export interface IApplicationResponse {
     id: number;
     application_type: {
         id: number;
@@ -37,13 +37,60 @@ export const fetchApplicationType = async (typeId: number | null): Promise<any> 
 
 // Отправка нового заявления
 export const submitApplication = async (formData: FormData): Promise<any> => {
-    const response = await apiInstance.post('/applications/list/', formData);
+    const response = await apiInstance.post('/applications/list/', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',  // Убедитесь, что используется этот заголовок
+        },
+    });
     return response.data;
 };
 
 // Получение списка заявлений пользователя
 export const fetchApplications = async (): Promise<IApplicationResponse[]> => {
     const response = await apiInstance.get('/applications/list/');
+    return response.data;
+};
+
+export const fetchProrectorApplications = async (): Promise<IApplicationResponse[]> => {
+    const response = await apiInstance.get('/applications/list-for-prorector/'); // Маршрут к API
+    return response.data;
+};
+
+interface ISignApplicationResponse {
+    id: number;
+    status: string;
+    ready_document: string;
+}
+
+export const signApplication = async (applicationId: number, signatureFile: File | null): Promise<ISignApplicationResponse | null> => {
+    if (signatureFile === null) {
+        return null
+    }
+
+    const formData = new FormData();
+    formData.append('prorector_signature', signatureFile);
+    formData.append('status', 'completed'); // Изменяем статус на "готово"
+
+    const response = await apiInstance.patch(`/applications/${applicationId}/sign/`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+
+    return response.data;
+};
+
+interface IRejectApplicationResponse {
+    id: number;
+    status: string;
+}
+
+export const rejectApplication = async (applicationId: number, rejectionComment: string): Promise<IRejectApplicationResponse> => {
+    const response = await apiInstance.patch(`/applications/${applicationId}/reject/`, {
+        status: 'rejected',  // Изменяем статус на "отклонено"
+        prorector_comment: rejectionComment, // Добавляем комментарий проректора
+    });
+
     return response.data;
 };
 
