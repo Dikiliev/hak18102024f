@@ -38,7 +38,7 @@ const SubmitApplicationForm: React.FC = () => {
     const mutation = useMutation({
         mutationFn: (formData: FormData) => submitApplication(formData),
         onSuccess: () => {
-            navigate('/profile');
+            navigate('/success');
         },
     });
 
@@ -59,10 +59,10 @@ const SubmitApplicationForm: React.FC = () => {
         );
     }
 
-    const handleInputChange = (fieldId: number, value: string) => {
+    const handleInputChange = (name: string, value: string) => {
         setFormData((prevData) => ({
             ...prevData,
-            [fieldId]: value,
+            [name]: value,
         }));
     };
 
@@ -76,17 +76,27 @@ const SubmitApplicationForm: React.FC = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         const formSubmissionData = new FormData();
-        formSubmissionData.append('application_type', typeId!);  // Передача типа заявления
 
-        // Предположим, у нас есть поля с осмысленными ключами вместо чисел
-        formSubmissionData.append('first_name', formData['1']);  // Здесь '1' - идентификатор поля ФИО
-        formSubmissionData.append('faculty', formData['2']);     // Здесь '2' - идентификатор поля факультета
-        formSubmissionData.append('course', formData['3']);      // Здесь '3' - идентификатор поля курса
-        formSubmissionData.append('reason', formData['4']);      // Здесь '4' - идентификатор поля причины
+        // Присваиваем тип заявления
+        formSubmissionData.append('application_type', typeId!);
 
+        // Поля текстовых данных. Упаковываем их в JSON перед добавлением
+        const fieldsData = {
+            ...formData
+        };
+        formSubmissionData.append('fields_data', JSON.stringify(fieldsData));
+
+        // Добавляем файлы (документы, подписи и т.д.)
+        Object.keys(fileData).forEach((key) => {
+            formSubmissionData.append(key, fileData[key]);
+        });
+
+        // Выводим для проверки
+        console.log([...formSubmissionData.entries()]);
+
+        // Отправляем запрос через React Query
         mutation.mutate(formSubmissionData);
     };
-
 
     return (
         <Container maxWidth="md" sx={{ py: 6 }}>
@@ -104,7 +114,7 @@ const SubmitApplicationForm: React.FC = () => {
                                         label={field.name}
                                         fullWidth
                                         required={field.is_required}
-                                        onChange={(e) => handleInputChange(field.id, e.target.value)}
+                                        onChange={(e) => handleInputChange(field.name, e.target.value)}
                                     />
                                 )}
 

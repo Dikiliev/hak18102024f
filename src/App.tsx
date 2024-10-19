@@ -19,6 +19,8 @@ import ProfilePage from '@pages/auth/profilePage/ProfilePage';
 import { observer } from 'mobx-react';
 import SelectApplicationType from "@pages/SelectApplicationType";
 import SubmitApplicationForm from "@pages/SubmitApplicationForm";
+import SuccessPage from "@pages/SuccessPage";
+import ApplicationListPage from "@pages/ApplicationListPage";
 
 const BaseLayout: React.FC = () => {
     const location = useLocation();
@@ -46,6 +48,8 @@ const App: React.FC = () => {
 
                         <Route path='select-application-type' element={<SelectApplicationType />} />
                         <Route path='submit-application/:typeId' element={<SubmitApplicationForm />} />
+                        <Route path='success' element={<SuccessPage />} />
+                        <Route path='applications' element={<ApplicationListPage />} />
 
                         <Route path='profile' element={<ProfilePage />} />
                         <Route path='login' element={<LoginPage />} />
