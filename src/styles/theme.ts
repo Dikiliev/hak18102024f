@@ -89,31 +89,31 @@ const theme = createTheme({
     },
 
     shadows: [
-        'none',
-        '0px 1px 3px rgba(255, 255, 255, 0.1), 0px 1px 1px rgba(255, 255, 255, 0.1), 0px 2px 1px -1px rgba(255, 255, 255, 0.1)',
-        '0px 1px 5px rgba(255, 255, 255, 0.1), 0px 2px 2px rgba(255, 255, 255, 0.1), 0px 3px 1px -2px rgba(255, 255, 255, 0.1)',
-        '0px 1px 8px rgba(255, 255, 255, 0.1), 0px 3px 4px rgba(255, 255, 255, 0.1), 0px 3px 3px -2px rgba(255, 255, 255, 0.1)',
-        '0px 2px 4px -1px rgba(255, 255, 255, 0.1), 0px 4px 5px rgba(255, 255, 255, 0.1), 0px 1px 10px rgba(255, 255, 255, 0.1)',
-        '0px 3px 5px -1px rgba(255, 255, 255, 0.1), 0px 5px 8px rgba(255, 255, 255, 0.1), 0px 1px 14px rgba(255, 255, 255, 0.1)',
-        '0px 3px 5px -1px rgba(255, 255, 255, 0.1), 0px 6px 10px rgba(255, 255, 255, 0.1), 0px 1px 18px rgba(255, 255, 255, 0.1)',
-        '0px 4px 5px -2px rgba(255, 255, 255, 0.1), 0px 7px 10px rgba(255, 255, 255, 0.1), 0px 2px 16px rgba(255, 255, 255, 0.1)',
-        '0px 5px 5px -3px rgba(255, 255, 255, 0.1), 0px 8px 10px rgba(255, 255, 255, 0.1), 0px 3px 14px rgba(255, 255, 255, 0.1)',
-        '0px 5px 6px -3px rgba(255, 255, 255, 0.1), 0px 9px 12px rgba(255, 255, 255, 0.1), 0px 3px 16px rgba(255, 255, 255, 0.1)',
-        '0px 6px 6px -3px rgba(255, 255, 255, 0.1), 0px 10px 14px rgba(255, 255, 255, 0.1), 0px 4px 18px rgba(255, 255, 255, 0.1)',
-        '0px 6px 7px -4px rgba(255, 255, 255, 0.1), 0px 11px 15px rgba(255, 255, 255, 0.1), 0px 4px 20px rgba(255, 255, 255, 0.1)',
-        '0px 7px 8px -4px rgba(255, 255, 255, 0.1), 0px 12px 17px rgba(255, 255, 255, 0.1), 0px 5px 22px rgba(255, 255, 255, 0.1)',
-        '0px 7px 8px -4px rgba(255, 255, 255, 0.1), 0px 13px 19px rgba(255, 255, 255, 0.1), 0px 5px 24px rgba(255, 255, 255, 0.1)',
-        '0px 7px 9px -4px rgba(255, 255, 255, 0.1), 0px 14px 21px rgba(255, 255, 255, 0.1), 0px 5px 26px rgba(255, 255, 255, 0.1)',
-        '0px 8px 9px -5px rgba(255, 255, 255, 0.1), 0px 15px 22px rgba(255, 255, 255, 0.1), 0px 6px 28px rgba(255, 255, 255, 0.1)',
-        '0px 8px 10px -5px rgba(255, 255, 255, 0.1), 0px 16px 24px rgba(255, 255, 255, 0.1), 0px 6px 30px rgba(255, 255, 255, 0.1)',
-        '0px 8px 11px -5px rgba(255, 255, 255, 0.1), 0px 17px 26px rgba(255, 255, 255, 0.1), 0px 6px 32px rgba(255, 255, 255, 0.1)',
-        '0px 9px 11px -5px rgba(255, 255, 255, 0.1), 0px 18px 28px rgba(255, 255, 255, 0.1), 0px 7px 34px rgba(255, 255, 255, 0.1)',
-        '0px 9px 12px -6px rgba(255, 255, 255, 0.1), 0px 19px 29px rgba(255, 255, 255, 0.1), 0px 7px 36px rgba(255, 255, 255, 0.1)',
-        '0px 10px 13px -6px rgba(255, 255, 255, 0.1), 0px 20px 31px rgba(255, 255, 255, 0.1), 0px 8px 38px rgba(255, 255, 255, 0.1)',
-        '0px 10px 13px -6px rgba(255, 255, 255, 0.1), 0px 21px 33px rgba(255, 255, 255, 0.1), 0px 8px 40px rgba(255, 255, 255, 0.1)',
-        '0px 10px 14px -6px rgba(255, 255, 255, 0.1), 0px 22px 35px rgba(255, 255, 255, 0.1), 0px 8px 42px rgba(255, 255, 255, 0.1)',
-        '0px 11px 14px -7px rgba(255, 255, 255, 0.1), 0px 23px 36px rgba(255, 255, 255, 0.1), 0px 9px 44px rgba(255, 255, 255, 0.1)',
-        '0px 11px 15px -7px rgba(255, 255, 255, 0.1), 0px 24px 38px rgba(255, 255, 255, 0.1), 0px 9px 46px rgba(255, 255, 255, 0.1)',
+        'none', // shadow 0 (нет тени)
+        '0px 1px 5px rgba(0, 0, 0, 0.08), 0px 1px 3px rgba(0, 0, 0, 0.12)', // shadow 1
+        '0px 2px 8px rgba(0, 0, 0, 0.07), 0px 2px 4px rgba(0, 0, 0, 0.1)', // shadow 2
+        '0px 4px 10px rgba(0, 0, 0, 0.06), 0px 2px 6px rgba(0, 0, 0, 0.09)', // shadow 3
+        '0px 6px 15px rgba(0, 0, 0, 0.05), 0px 3px 6px rgba(0, 0, 0, 0.08)', // shadow 4
+        '0px 8px 20px rgba(0, 0, 0, 0.04), 0px 4px 8px rgba(0, 0, 0, 0.07)', // shadow 5
+        '0px 10px 25px rgba(0, 0, 0, 0.03), 0px 5px 10px rgba(0, 0, 0, 0.06)', // shadow 6
+        '0px 12px 30px rgba(0, 0, 0, 0.03), 0px 6px 12px rgba(0, 0, 0, 0.05)', // shadow 7
+        '0px 14px 35px rgba(0, 0, 0, 0.02), 0px 7px 14px rgba(0, 0, 0, 0.04)', // shadow 8
+        '0px 16px 40px rgba(0, 0, 0, 0.02), 0px 8px 16px rgba(0, 0, 0, 0.04)', // shadow 9
+        '0px 18px 45px rgba(0, 0, 0, 0.02), 0px 9px 18px rgba(0, 0, 0, 0.03)', // shadow 10
+        '0px 20px 50px rgba(0, 0, 0, 0.01), 0px 10px 20px rgba(0, 0, 0, 0.03)', // shadow 11
+        '0px 22px 55px rgba(0, 0, 0, 0.01), 0px 11px 22px rgba(0, 0, 0, 0.02)', // shadow 12
+        '0px 24px 60px rgba(0, 0, 0, 0.01), 0px 12px 24px rgba(0, 0, 0, 0.02)', // shadow 13
+        '0px 26px 65px rgba(0, 0, 0, 0.01), 0px 13px 26px rgba(0, 0, 0, 0.02)', // shadow 14
+        '0px 28px 70px rgba(0, 0, 0, 0.01), 0px 14px 28px rgba(0, 0, 0, 0.01)', // shadow 15
+        '0px 30px 75px rgba(0, 0, 0, 0.01), 0px 15px 30px rgba(0, 0, 0, 0.01)', // shadow 16
+        '0px 32px 80px rgba(0, 0, 0, 0.01), 0px 16px 32px rgba(0, 0, 0, 0.01)', // shadow 17
+        '0px 34px 85px rgba(0, 0, 0, 0.01), 0px 17px 34px rgba(0, 0, 0, 0.01)', // shadow 18
+        '0px 36px 90px rgba(0, 0, 0, 0.01), 0px 18px 36px rgba(0, 0, 0, 0.01)', // shadow 19
+        '0px 38px 95px rgba(0, 0, 0, 0.01), 0px 19px 38px rgba(0, 0, 0, 0.01)', // shadow 20
+        '0px 40px 100px rgba(0, 0, 0, 0.01), 0px 20px 40px rgba(0, 0, 0, 0.01)', // shadow 21
+        '0px 42px 105px rgba(0, 0, 0, 0.01), 0px 21px 42px rgba(0, 0, 0, 0.01)', // shadow 22
+        '0px 44px 110px rgba(0, 0, 0, 0.01), 0px 22px 44px rgba(0, 0, 0, 0.01)', // shadow 23
+        '0px 46px 115px rgba(0, 0, 0, 0.01), 0px 23px 46px rgba(0, 0, 0, 0.01)', // shadow 24
     ],
 });
 

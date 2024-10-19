@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import { useStore } from '@stores/StoreContext';
-import { useCart } from '@hooks/useCart';
-import { useFavorites } from '@hooks/useFavorites';
 import Form from '@components/form/Form';
 
 const LoginPage = observer(() => {
@@ -15,9 +13,6 @@ const LoginPage = observer(() => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const { syncLocalCartToServer } = useCart();
-    const { syncLocalFavoritesToServer } = useFavorites();
-
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setLoading(true);
@@ -26,8 +21,6 @@ const LoginPage = observer(() => {
         await authStore.login({ username, password });
 
         if (!authStore.hasErrors()) {
-            syncLocalCartToServer();
-            syncLocalFavoritesToServer();
             navigate('/');
         }
 

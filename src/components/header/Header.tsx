@@ -8,26 +8,20 @@ import { Button, Container, Typography } from '@mui/material';
 import ProfileMenu from './ProfileMenu';
 import styles from './Header.module.css';
 import Logo from '@assets/favicon.svg?react';
-import IconWithLabel from './IconWithLabel';
 
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import IconButton from '@mui/material/IconButton';
 import theme from '@styles/theme';
 import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { useStore } from '@stores/StoreContext';
 
-import { useCart } from '@hooks/useCart';
-import { useFavorites } from '@hooks/useFavorites';
 import MenuIcon from '@mui/icons-material/Menu';
 
 const Header: React.FC = observer(() => {
     const navigate = useNavigate();
 
-    const { authStore, cartStore, favoritesStore } = useStore();
+    const { authStore} = useStore();
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -52,22 +46,6 @@ const Header: React.FC = observer(() => {
         setMobileMoreAnchorEl(null);
     };
 
-    const { cart } = useCart();
-    const { favoritesList } = useFavorites();
-
-    useEffect(() => {
-        if (cart) {
-            const totalCount = cart.items.reduce((acc, item) => acc + item.quantity, 0);
-            cartStore.setCartItemCount(totalCount);
-        }
-    }, [cart]);
-
-    useEffect(() => {
-        if (favoritesList) {
-            const totalCount = favoritesList.items.length;
-            favoritesStore.setFavoritesCount(totalCount);
-        }
-    }, [favoritesList]);
 
     return (
         <Box sx={{ flexGrow: 1 }}>
