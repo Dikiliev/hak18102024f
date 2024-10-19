@@ -18,3 +18,18 @@ export const updateUserProfile = async (profileData: Partial<FormData>): Promise
     });
     return response.data;
 };
+
+// Функция для обновления подписи пользователя
+export const updateUserSignature = async (signatureData: string): Promise<IUserProfile> => {
+    const formData = new FormData();
+    formData.append('signature', signatureData);
+
+
+    const response = await apiInstance.put('/users/profile/', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+
+    return response.data;
+};

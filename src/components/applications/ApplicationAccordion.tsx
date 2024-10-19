@@ -1,4 +1,4 @@
-import React, {ReactNode} from "react";
+import {ReactNode} from "react";
 import {
     Accordion,
     AccordionDetails,
@@ -10,7 +10,6 @@ import {
     useTheme
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import CloseIcon from "@mui/icons-material/Close";
 import {downloadApplication, IApplicationResponse} from "../../api/applications"; // Убедитесь, что импорт корректен
 import { getAbsoluteUrl } from "../../utils/url";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";

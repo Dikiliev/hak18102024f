@@ -16,11 +16,15 @@ import {
 } from './../api/applications';
 import ApplicationAccordion from "../components/applications/ApplicationAccordion";
 import PdfSignatureModal from "../components/PdfSignatureModal.tsx";
+import PDFViewerWithSignature from '../components/PDFViewerWithSignature.tsx';
+import PDFViewer from '../components/PDFViewerWithSignature.tsx';
+import SignatureField from './SignatureField.tsx';
 
 
 const ProrectorPage: React.FC = () => {
     const [expanded, setExpanded] = useState<number | false>(false);
     const [signatureFile, setSignatureFile] = useState<File | null>(null);
+    const [documentFile, setDocumentFile] = useState<File | null>(null);
 
     const { data, isLoading, isError, error } = useQuery({
         queryKey: ['prorectorApplications'],
@@ -43,6 +47,12 @@ const ProrectorPage: React.FC = () => {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             setSignatureFile(e.target.files[0]);
+        }
+    };
+
+    const handleDocFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setDocumentFile(e.target.files[0]);
         }
     };
 
@@ -80,22 +90,17 @@ const ProrectorPage: React.FC = () => {
 
     return (
         <Box>
-            <PdfSignatureModal
-                open={open}
-                handleClose={handleClose}
-                pdfDocument="https://ds77nsk.edusite.ru/DswMedia/spravka.pdf"
-            />
-            <Button onClick={handleOpen}>OPen</Button>
-            <Container maxWidth="md" sx={{py: 6}}>
-                <Typography variant="h4" component="h1" gutterBottom sx={{fontWeight: 'bold', textAlign: 'center'}}>
+            <Container maxWidth="md" sx={{ py: 6 }}>
+                <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', textAlign: 'center' }}>
                     Заявления, ожидающие подписания
                 </Typography>
 
                 <div>
                     {/* Ваша форма или страница для проректора */}
-                    <input type="file" onChange={handleFileChange}/>
-                    <button onClick={() => handleSign(123)}>Подписать заявление</button>
+                    <input type="file" onChange={handleFileChange} />
                 </div>
+
+                <SignatureField/>
 
                 {data?.map((application, index) => (
                     <Box key={application.id}>

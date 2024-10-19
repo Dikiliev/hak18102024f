@@ -3,6 +3,7 @@ export interface IUserProfileBase {
     first_name?: string | null;
     last_name?: string | null;
     phone_number?: string | null;
+    signature?: string | null;
 }
 
 export interface IUserProfileWithAvatarPath extends IUserProfileBase {

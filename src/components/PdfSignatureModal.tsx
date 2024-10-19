@@ -10,7 +10,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 interface PdfSignatureModalProps {
     open: boolean;
     handleClose: () => void;
-    pdfDocument: string;
+    pdfDocument: File;
 }
 
 const PdfSignatureModal: React.FC<PdfSignatureModalProps> = ({ open, handleClose, pdfDocument }) => {
