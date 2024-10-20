@@ -22,6 +22,8 @@ const PDFViewerModal: React.FC<PDFViewerModalProps> = ({ isOpen, setClose, url, 
         setClose(false);
     }
 
+    console.log(url);
+
     return (
         <>
     <Modal open={isOpen} onClose={handleClose}>

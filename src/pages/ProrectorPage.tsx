@@ -34,6 +34,8 @@ const ProrectorPage: React.FC = () => {
     const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
     const [rejectComment, setRejectComment] = useState('');
 
+    const [pdfUrl, setPdfUrl] = useState<string>('/input.pdf');
+
     const { data, isLoading, isError, error } = useQuery({
         queryKey: ['prorectorApplications'],
         queryFn: fetchProrectorApplications,
@@ -93,10 +95,11 @@ const ProrectorPage: React.FC = () => {
     }
 
     const handleOpenSignature = (application: IApplicationResponse) => {
+        setPdfUrl(application.sent_document || application.example_document || '/input.pdf');
+        console.log(application.sent_document || application.example_document || '/input.pdf')
         handleSetOpen(true);
     }
 
-    const pdfUrl = '/input.pdf';
     const { user } = useUser();
     const userSignatureUrl = user?.signature;
 

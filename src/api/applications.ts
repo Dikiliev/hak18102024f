@@ -18,7 +18,11 @@ export interface IApplicationResponse {
     status: string;
     submission_date: string;
     fields_data: string;
+
+    example_document: string | null;
+    sent_document: string | null;
     ready_document: string | null;
+    reviewer_comment: string | null;
 }
 
 // Получение списка типов заявлений
