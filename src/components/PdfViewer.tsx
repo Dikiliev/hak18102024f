@@ -2,8 +2,21 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import SignatureCanvas from 'react-signature-canvas';
 import { PDFDocument } from 'pdf-lib';
-import { saveAs } from 'file-saver';
-import './../../styles.css';
+import saveAs from 'file-saver';
+import {
+    Box,
+    Button,
+    Typography,
+    IconButton,
+    Paper,
+    CircularProgress,
+} from '@mui/material';
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import ZoomOutIcon from '@mui/icons-material/ZoomOut';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import ClearIcon from '@mui/icons-material/Clear';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.mjs`;
 
@@ -21,17 +34,25 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
     const [totalPages, setTotalPages] = useState(0);
     const [pageNumber, setPageNumber] = useState(initialPage);
     const [pageScale, setPageScale] = useState(initialScale);
-    const [signaturePosition, setSignaturePosition] = useState<{ x: number; y: number } | null>(null);
+    const [signaturePosition, setSignaturePosition] = useState<{
+        x: number;
+        y: number;
+    } | null>(null);
     const signatureRef = useRef<SignatureCanvas>(null);
     const [pdfBytes, setPdfBytes] = useState<ArrayBuffer | null>(null);
     const viewerRef = useRef<HTMLDivElement | null>(null);
-    const [pageDimensions, setPageDimensions] = useState<{ width: number; height: number } | null>(null);
+    const [pageDimensions, setPageDimensions] = useState<{
+        width: number;
+        height: number;
+    } | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
         const loadPdf = async () => {
             const response = await fetch(url);
             const pdfBytes = await response.arrayBuffer();
             setPdfBytes(pdfBytes);
+            setLoading(false);
         };
 
         loadPdf();
@@ -82,14 +103,23 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
         if (!viewerRef.current || !pageDimensions) return;
 
         const containerRect = viewerRef.current.getBoundingClientRect();
-        const x = (event.clientX - containerRect.left + viewerRef.current.scrollLeft) / pageScale;
-        const y = (event.clientY - containerRect.top + viewerRef.current.scrollTop) / pageScale;
+        const x =
+            (event.clientX - containerRect.left + viewerRef.current.scrollLeft) /
+            pageScale;
+        const y =
+            (event.clientY - containerRect.top + viewerRef.current.scrollTop) /
+            pageScale;
 
         setSignaturePosition({ x, y });
     };
 
     const handleDownloadSignedPDF = async () => {
-        if (!pdfBytes || !signatureRef.current || !signaturePosition || signatureRef.current.isEmpty()) {
+        if (
+            !pdfBytes ||
+            !signatureRef.current ||
+            !signaturePosition ||
+            signatureRef.current.isEmpty()
+        ) {
             alert('Пожалуйста, добавьте подпись перед сохранением.');
             return;
         }
@@ -99,7 +129,9 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
         const page = pages[pageNumber - 1];
 
         const signatureDataURL = signatureRef.current.toDataURL('image/png');
-        const signatureImageBytes = await fetch(signatureDataURL).then((res) => res.arrayBuffer());
+        const signatureImageBytes = await fetch(signatureDataURL).then((res) =>
+            res.arrayBuffer()
+        );
         const signatureImage = await pdfDoc.embedPng(signatureImageBytes);
 
         const { width, height } = page.getSize();
@@ -131,74 +163,161 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
     };
 
     return (
-        <div className="pdf-viewer">
-            <div
-                ref={viewerRef}
-                onClick={handlePageClick}
-                style={{ position: 'relative', display: 'inline-block' }}
+        <Box sx={{ p: 3 }}>
+            <Paper
+                sx={{
+                    p: 2,
+                    mb: 3,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
             >
-                <Document
-                    file={url}
-                    onLoadSuccess={onDocumentLoadSuccess}
-                    loading={<div>Загрузка документа...</div>}
+                <Typography
+                    variant="h5"
+                    component="h2"
+                    gutterBottom
+                    sx={{ fontWeight: 'bold' }}
                 >
-                    <Page
-                        pageNumber={pageNumber}
-                        scale={pageScale}
-                        onLoadSuccess={onPageLoadSuccess}
-                        renderTextLayer={false}       // Disable text layer
-                        renderAnnotationLayer={false} // Disable annotation layer
-                    />
-                </Document>
+                    Просмотр и подписание PDF
+                </Typography>
+            </Paper>
 
-                {signaturePosition && (
-                    <div
-                        style={{
-                            position: 'absolute',
-                            top: signaturePosition.y * pageScale,
-                            left: signaturePosition.x * pageScale,
-                            border: '1px solid black',
-                            width: `${150 * pageScale}px`,
-                            height: `${50 * pageScale}px`,
-                            zIndex: 1,
-                        }}
+            {loading ? (
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        minHeight: '400px',
+                    }}
+                >
+                    <CircularProgress />
+                </Box>
+            ) : (
+                <Box
+                    ref={viewerRef}
+                    onClick={handlePageClick}
+                    sx={{
+                        position: 'relative',
+                        display: 'inline-block',
+                        mb: 2,
+                        border: '1px solid #ccc',
+                    }}
+                >
+                    <Document
+                        file={url}
+                        onLoadSuccess={onDocumentLoadSuccess}
+                        loading={
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    minHeight: '400px',
+                                }}
+                            >
+                                <CircularProgress />
+                            </Box>
+                        }
                     >
-                        <SignatureCanvas
-                            penColor="black"
-                            canvasProps={{ width: 150, height: 50, className: 'sigCanvas' }}
-                            ref={signatureRef}
+                        <Page
+                            pageNumber={pageNumber}
+                            scale={pageScale}
+                            onLoadSuccess={onPageLoadSuccess}
+                            renderTextLayer={false}
+                            renderAnnotationLayer={false}
                         />
-                    </div>
-                )}
-            </div>
+                    </Document>
 
-            <div className="footer">
-                <div className="button-container">
-                    <button onClick={handleZoomIn} disabled={pageScale >= 3}>
-                        Zoom +
-                    </button>
-                    <button onClick={handleZoomOut} disabled={pageScale <= 0.3}>
-                        Zoom -
-                    </button>
-                </div>
-                <div className="page-text">
-                    Page {pageNumber} of {totalPages}
-                </div>
-                <div className="button-container">
-                    <button onClick={handlePrevious} disabled={pageNumber === 1}>
-                        ‹ Previous
-                    </button>
-                    <button onClick={handleNext} disabled={pageNumber === totalPages}>
-                        Next ›
-                    </button>
-                </div>
+                    {signaturePosition && (
+                        <Box
+                            sx={{
+                                position: 'absolute',
+                                top: signaturePosition.y * pageScale,
+                                left: signaturePosition.x * pageScale,
+                                border: '2px solid #3f51b5',
+                                borderRadius: '4px',
+                                width: `${150 * pageScale}px`,
+                                height: `${50 * pageScale}px`,
+                                zIndex: 1,
+                                overflow: 'hidden',
+                            }}
+                        >
+                            <SignatureCanvas
+                                penColor="black"
+                                canvasProps={{
+                                    width: 150,
+                                    height: 50,
+                                    className: 'sigCanvas',
+                                }}
+                                ref={signatureRef}
+                            />
+                        </Box>
+                    )}
+                </Box>
+            )}
 
-                <div className="signature-actions">
-                    <button onClick={handleDownloadSignedPDF}>Скачать с подписью</button>
-                    <button onClick={handleClearSignature}>Очистить подпись</button>
-                </div>
-            </div>
-        </div>
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    mb: 3,
+                }}
+            >
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <IconButton onClick={handlePrevious} disabled={pageNumber === 1}>
+                        <NavigateBeforeIcon />
+                    </IconButton>
+                    <Typography variant="body1">
+                        Страница {pageNumber} из {totalPages}
+                    </Typography>
+                    <IconButton
+                        onClick={handleNext}
+                        disabled={pageNumber === totalPages}
+                    >
+                        <NavigateNextIcon />
+                    </IconButton>
+                </Box>
+
+                <Box>
+                    <IconButton onClick={handleZoomIn} disabled={pageScale >= 3}>
+                        <ZoomInIcon />
+                    </IconButton>
+                    <IconButton onClick={handleZoomOut} disabled={pageScale <= 0.3}>
+                        <ZoomOutIcon />
+                    </IconButton>
+                </Box>
+            </Box>
+
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    mt: 4,
+                }}
+            >
+                <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<SaveAltIcon />}
+                    onClick={handleDownloadSignedPDF}
+                >
+                    Скачать с подписью
+                </Button>
+
+                <Button
+                    variant="outlined"
+                    color="secondary"
+                    startIcon={<ClearIcon />}
+                    onClick={handleClearSignature}
+                >
+                    Очистить подпись
+                </Button>
+            </Box>
+        </Box>
     );
 };
 
