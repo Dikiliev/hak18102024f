@@ -10,13 +10,14 @@ import {
     useTheme
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ErrorIcon from '@mui/icons-material/Error';
 import {downloadApplication, IApplicationResponse} from "../../api/applications"; // Убедитесь, что импорт корректен
 import { getAbsoluteUrl } from "../../utils/url";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import {useMutation} from "@tanstack/react-query"; // Проверьте, правильно ли реализована эта функция
 
 interface ApplicationAccordionProps {
-    application: IApplicationResponse;
+    application: IApplicationResponse; 
     expanded: number | false;
     index: number;
     handleAccordionChange:  (event: React.SyntheticEvent, expanded: boolean) => void;
@@ -52,6 +53,8 @@ const ApplicationAccordion: React.FC<ApplicationAccordionProps> = ({
                 return <Chip label="В процессе" color="info" />;
             case 'completed':
                 return <Chip label="Готово" color="success" icon={<CheckCircleIcon />} />;
+            case 'rejected':
+                return <Chip label="Отклонено" color="error" icon={<ErrorIcon  />} />;
             default:
                 return <Chip label="Неизвестно" />;
         }

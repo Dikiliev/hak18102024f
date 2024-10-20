@@ -22,6 +22,7 @@ import SubmitApplicationForm from "@pages/SubmitApplicationForm";
 import SuccessPage from "@pages/SuccessPage";
 import ApplicationListPage from "@pages/ApplicationListPage";
 import ProrectorPage from "./pages/ProrectorPage";
+import SupportPage from './pages/SupportPage/SupportPage.tsx';
 
 const BaseLayout: React.FC = () => {
     const location = useLocation();
@@ -53,6 +54,8 @@ const App: React.FC = () => {
                         <Route path='applications' element={<ApplicationListPage />} />
 
                         <Route path='prorector' element={<ProrectorPage />} />
+
+                        <Route path='chat' element={<SupportPage />} />
 
                         <Route path='profile' element={<ProfilePage />} />
                         <Route path='login' element={<LoginPage />} />

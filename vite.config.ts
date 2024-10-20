@@ -8,9 +8,11 @@ export default defineConfig({
   plugins: [react(), tsconfigPaths(), svgr(), viteStaticCopy({
     targets: [
       {
-        src: 'node_modules/pdfjs-dist/build/pdf.worker.min.js',
+        src: 'node_modules/document-viewer-ts/dist/worker/pdf.worker.min.js',
         dest: '',
       },
-    ],}),],
+    ],
+  }),
+  ],
 
 });

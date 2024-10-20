@@ -18,6 +18,34 @@ import { useStore } from '@stores/StoreContext';
 
 import MenuIcon from '@mui/icons-material/Menu';
 
+const navigates = [
+    {
+        text: 'Главная',
+        url: '/'
+    },
+    {
+        text: 'Написать заявление',
+        url: '/select-application-type'
+    },
+    {
+        text: 'Поддержка',
+        url: '/chat'
+    }
+]
+
+const studentNavigates = [
+    {
+        text: 'Мои заявления',
+        url: '/applications'
+    },
+]
+const prorectorNavigates = [
+    {
+        text: 'Заявления',
+        url: '/prorector'
+    },
+]
+
 const Header: React.FC = observer(() => {
     const navigate = useNavigate();
 
@@ -45,7 +73,6 @@ const Header: React.FC = observer(() => {
     const handleMobileMenuClose = () => {
         setMobileMoreAnchorEl(null);
     };
-
 
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -82,20 +109,32 @@ const Header: React.FC = observer(() => {
 
                         <Box sx={{ display: { xs: 'none', md: 'flex', gap: theme.spacing(5), alignItems: 'center' } }}>
 
-                            <Typography variant='body1' component='a' href='#' sx={{ cursor: 'pointer', textDecoration: 'none', color: 'text.primary' }}>
-                                Главная
-                            </Typography>
-                            <Typography variant='body1' component='a' href='#' sx={{ cursor: 'pointer', textDecoration: 'none', color: 'text.primary' }}>
-                                Справки
-                            </Typography>
-                            <Typography variant='body1' component='a' href='#' sx={{ cursor: 'pointer', textDecoration: 'none', color: 'text.primary' }}>
-                                Мои заявления
-                            </Typography>
+                            {
+                                navigates.map((item) => (
+                                    <Typography key={item.text} variant='body1' component='a' href={item.url} sx={{ cursor: 'pointer', textDecoration: 'none', color: 'text.primary' }}>
+                                        {item.text}
+                                    </Typography>
+                                ))
+                            }
 
                             {authStore.isAuthenticated ? (
-                                <IconButton sx={{ color: theme.palette.text.primary}} size={'small'} aria-label="profile" onClick={handleProfileMenuOpen}>
-                                    <AccountCircle style={{ fontSize: 28 }}/>
-                                </IconButton>
+                                <>
+                                    {authStore.user?.role == "student" && studentNavigates.map((item) => (
+                                        <Typography key={item.text} variant='body1' component='a' href={item.url} sx={{ cursor: 'pointer', textDecoration: 'none', color: 'text.primary' }}>
+                                            {item.text}
+                                        </Typography>
+                                    ))}
+
+                                    {authStore.user?.role == "prorector" && prorectorNavigates.map((item) => (
+                                        <Typography key={item.text} variant='body1' component='a' href={item.url} sx={{ cursor: 'pointer', textDecoration: 'none', color: 'text.primary' }}>
+                                            {item.text}
+                                        </Typography>
+                                    ))}
+
+                                    <IconButton sx={{ color: theme.palette.text.primary}} size={'small'} aria-label="profile" onClick={handleProfileMenuOpen}>
+                                        <AccountCircle style={{ fontSize: 28 }}/>
+                                    </IconButton>
+                                </>
                             ) : (
                                 <Button variant='contained' onClick={() => navigate('/login')}>
                                     Войти

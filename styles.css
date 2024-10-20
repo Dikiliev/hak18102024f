@@ -1,0 +1,24 @@
+.App {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.page-container {
+    margin: 20px;
+    width: 650px;
+    height: 700px;
+    overflow-y: scroll;
+    box-shadow: 0 25px 50px 0 rgba (62, 62, 62, 0.15);
+    -webkit-box-shadow: 0 25px 50px 0 rgb(62 62 62 / 15%);
+}
+.footer {
+    display: flex;
+    justify-content: space-between;
+    width: 500px;
+}
+.button-container {
+    display: flex;
+    gap: 8px;
+}

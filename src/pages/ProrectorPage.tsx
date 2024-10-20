@@ -15,10 +15,7 @@ import {
     rejectApplication,
 } from './../api/applications';
 import ApplicationAccordion from "../components/applications/ApplicationAccordion";
-import PdfSignatureModal from "../components/PdfSignatureModal.tsx";
-import PDFViewerWithSignature from '../components/PDFViewerWithSignature.tsx';
-import PDFViewer from '../components/PDFViewerWithSignature.tsx';
-import SignatureField from './SignatureField.tsx';
+import SignatureField from './SignatureField';
 
 
 const ProrectorPage: React.FC = () => {
@@ -95,42 +92,39 @@ const ProrectorPage: React.FC = () => {
                     Заявления, ожидающие подписания
                 </Typography>
 
-                <div>
-                    {/* Ваша форма или страница для проректора */}
-                    <input type="file" onChange={handleFileChange} />
-                </div>
-
                 <SignatureField/>
 
-                {data?.map((application, index) => (
-                    <Box key={application.id}>
-                        <ApplicationAccordion
-                            application={application}
-                            expanded={expanded}
-                            handleAccordionChange={handleAccordionChange(index)}
-                            index={index}
-                        >
-                            <Box display="flex" justifyContent="end" alignItems="center" gap={2}>
-                                <Button
-                                    variant="contained"
-                                    color="error"
-                                    onClick={() => handleReject(application.id)}
-                                >
-                                    Отклонить заявление
-                                </Button>
+                <Box sx={{mt: 2}}>
+                    {data?.map((application, index) => (
+                        <Box key={application.id}>
+                            <ApplicationAccordion
+                                application={application}
+                                expanded={expanded}
+                                handleAccordionChange={handleAccordionChange(index)}
+                                index={index}
+                            >
+                                <Box display="flex" justifyContent="end" alignItems="center" gap={2}>
+                                    <Button
+                                        variant="contained"
+                                        color="error"
+                                        onClick={() => handleReject(application.id)}
+                                    >
+                                        Отклонить заявление
+                                    </Button>
 
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={() => handleSign(application.id)}
-                                    sx={{ mr: 2 }}
-                                >
-                                    Подписать заявление
-                                </Button>
-                            </Box>
-                        </ApplicationAccordion>
-                    </Box>
-                ))}
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={() => handleSign(application.id)}
+                                        sx={{ mr: 2 }}
+                                    >
+                                        Подписать заявление
+                                    </Button>
+                                </Box>
+                            </ApplicationAccordion>
+                        </Box>
+                    ))}
+                </Box>
             </Container>
         </Box>
     );

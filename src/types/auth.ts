@@ -21,4 +21,5 @@ export interface TokenData {
     exp: number;
     user_id: string;
     username: string;
+    role: string;
 }

@@ -71,7 +71,7 @@ export const signApplication = async (applicationId: number, signatureFile: File
     formData.append('prorector_signature', signatureFile);
     formData.append('status', 'completed'); // Изменяем статус на "готово"
 
-    const response = await apiInstance.patch(`/applications/${applicationId}/sign/`, formData, {
+    const response = await apiInstance.patch(`/applications/list/${applicationId}/sign/`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
@@ -86,7 +86,7 @@ interface IRejectApplicationResponse {
 }
 
 export const rejectApplication = async (applicationId: number, rejectionComment: string): Promise<IRejectApplicationResponse> => {
-    const response = await apiInstance.patch(`/applications/${applicationId}/reject/`, {
+    const response = await apiInstance.patch(`/applications/list/${applicationId}/reject/`, {
         status: 'rejected',  // Изменяем статус на "отклонено"
         prorector_comment: rejectionComment, // Добавляем комментарий проректора
     });
