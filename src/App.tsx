@@ -52,6 +52,7 @@ const App: React.FC = () => {
                         <Route path='select-application-type' element={<SelectApplicationType />} />
                         <Route path='submit-application/:typeId' element={<SubmitApplicationForm />} />
                         <Route path='success' element={<SuccessPage />} />
+
                         <Route path='applications' element={<ApplicationListPage />} />
 
                         <Route path='prorector' element={<ProrectorPage />} />

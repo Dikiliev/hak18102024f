@@ -104,7 +104,9 @@ export const revokeApplication = async (applicationId: number): Promise<any> => 
 
 // Скачивание готового документа
 export const downloadApplication = async (documentUrl: string): Promise<void> => {
-    const response = await axios.get(BASE_URL + documentUrl, {
+    console.log('[downloadApplication]')
+    console.log(`[${BASE_URL + documentUrl}]`)
+    const response = await axios.get(BASE_URL + documentUrl.replace(BASE_URL, ''), {
         responseType: 'blob', // Ожидаем файл в ответе
     });
 

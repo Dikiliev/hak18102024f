@@ -4,14 +4,10 @@ import {
     Container,
     Typography,
     Box,
-    Grid,
-    Accordion,
-    AccordionSummary,
-    AccordionDetails,
+
     Button,
     CircularProgress,
     Alert,
-    Chip, Card
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { fetchApplications, revokeApplication, downloadApplication } from '@api/applications';
