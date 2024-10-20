@@ -35,6 +35,7 @@ const ProrectorPage: React.FC = () => {
     const [rejectComment, setRejectComment] = useState('');
 
     const [pdfUrl, setPdfUrl] = useState<string>('/input.pdf');
+    const [selectedApplication, setSelectedApplication] = useState<IApplicationResponse | null>(null);
 
     const { data, isLoading, isError, error } = useQuery({
         queryKey: ['prorectorApplications'],
@@ -96,7 +97,7 @@ const ProrectorPage: React.FC = () => {
 
     const handleOpenSignature = (application: IApplicationResponse) => {
         setPdfUrl(application.sent_document || application.example_document || '/input.pdf');
-        console.log(application.sent_document || application.example_document || '/input.pdf')
+        setSelectedApplication(application);
         handleSetOpen(true);
     }
 
@@ -133,7 +134,13 @@ const ProrectorPage: React.FC = () => {
 
                 <SignatureField/>
 
-                <PDFViewerModal isOpen={open} setClose={handleSetOpen} url={pdfUrl} signatureImageUrl={userSignatureUrl} />
+                <PDFViewerModal
+                    isOpen={open}
+                    setClose={handleSetOpen}
+                    url={pdfUrl}
+                    signatureImageUrl={userSignatureUrl}
+                    applicationId={selectedApplication?.id || 0}
+                />
 
                 <Box sx={{mt: 2}}>
                     {data?.map((application, index) => (

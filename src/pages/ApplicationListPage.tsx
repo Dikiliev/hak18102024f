@@ -13,12 +13,9 @@ import {
     Alert,
     Chip, Card
 } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CloseIcon from '@mui/icons-material/Close';
 import { fetchApplications, revokeApplication, downloadApplication } from '@api/applications';
-import theme from "@styles/theme";
-import {getAbsoluteUrl} from "../utils/url";
+
 import ApplicationAccordion from "../components/applications/ApplicationAccordion";
 
 const ApplicationListPage: React.FC = () => {

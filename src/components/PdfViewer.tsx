@@ -17,19 +17,24 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import ClearIcon from '@mui/icons-material/Clear';
+import SendIcon from '@mui/icons-material/Send';
+import axios from 'axios';
+import { apiInstance } from '../api';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 
 interface PDFViewerProps {
     url: string;
-    signatureImageUrl: string; // Новый проп для URL изображения подписи
+    signatureImageUrl: string;
+    applicationId: number; // Новый проп для идентификатора заявления
     initialPage?: number;
     initialScale?: number;
 }
 
 const PDFViewer: React.FC<PDFViewerProps> = ({
                                                  url,
-                                                 signatureImageUrl, // Получаем URL изображения подписи
+                                                 signatureImageUrl,
+                                                 applicationId, // Используем applicationId
                                                  initialPage = 1,
                                                  initialScale = 1,
                                              }) => {
@@ -41,7 +46,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
         y: number;
     } | null>(null);
     const [signatureImage, setSignatureImage] = useState<HTMLImageElement | null>(null);
-    const [signatureScale, setSignatureScale] = useState<number>(0.5); // Изначально масштаб 0.5
+    const [signatureScale, setSignatureScale] = useState<number>(0.5);
     const [pdfBytes, setPdfBytes] = useState<ArrayBuffer | null>(null);
     const viewerRef = useRef<HTMLDivElement | null>(null);
     const [pageDimensions, setPageDimensions] = useState<{
@@ -159,17 +164,70 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
         saveAs(blob, 'signed_document.pdf');
     };
 
+    const handleSendSignedPDF = async () => {
+        if (!pdfBytes || !signaturePosition || !signatureImage) {
+            alert('Пожалуйста, выберите место для подписи перед отправкой.');
+            return;
+        }
+
+        const pdfDoc = await PDFDocument.load(pdfBytes);
+        const pages = pdfDoc.getPages();
+        const page = pages[pageNumber - 1];
+
+        // Получаем байты изображения подписи
+        const response = await fetch(signatureImageUrl);
+        const signatureImageBytes = await response.arrayBuffer();
+        const embeddedSignatureImage = await pdfDoc.embedPng(signatureImageBytes);
+
+        const { width, height } = page.getSize();
+        const pdfScale = width / (pageDimensions?.width || width);
+
+        // Вычисляем размеры подписи в PDF, учитывая signatureScale
+        const signatureWidth =
+            (signatureImage.width / (pageDimensions?.width || 1)) * width * signatureScale;
+        const signatureHeight =
+            (signatureImage.height / (pageDimensions?.height || 1)) * height * signatureScale;
+
+        // Центрируем подпись на месте клика
+        const x = signaturePosition.x * pdfScale - signatureWidth / 2;
+        const y = height - signaturePosition.y * pdfScale - signatureHeight / 2;
+
+        page.drawImage(embeddedSignatureImage, {
+            x: x,
+            y: y,
+            width: signatureWidth,
+            height: signatureHeight,
+        });
+
+        const pdfBytesModified = await pdfDoc.save();
+
+        // Отправляем подписанный PDF на сервер
+        const formData = new FormData();
+        formData.append('ready_document', new Blob([pdfBytesModified], { type: 'application/pdf' }));
+
+        try {
+            await apiInstance.post(`/applications/list/${applicationId}/complete/`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            alert('Документ успешно отправлен.');
+        } catch (error) {
+            console.error('Ошибка при отправке документа:', error);
+            alert('Произошла ошибка при отправке документа.');
+        }
+    };
+
     const handleClearSignature = () => {
         setSignaturePosition(null);
     };
 
-    // Функция для изменения масштаба подписи
     const handleSignatureScaleChange = (event: Event, newValue: number | number[]) => {
         setSignatureScale(newValue as number);
     };
 
     return (
-        <Box display={'flex'} flexDirection={'column'} justifyContent='center' alignItems='center'>
+        <Box sx={{ p: 3 }}>
             {loading ? (
                 <Box
                     sx={{
@@ -283,6 +341,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
                 sx={{
                     display: 'flex',
                     alignItems: 'center',
+                    mb: 2,
                 }}
             >
                 <Typography variant="body1" sx={{ mr: 2 }}>
@@ -306,8 +365,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    gap: 2,
-                    mt: 2,
+                    mt: 4,
                 }}
             >
                 <Button
@@ -319,14 +377,26 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
                     Скачать с подписью
                 </Button>
 
-                <Button
-                    variant="outlined"
-                    color="secondary"
-                    startIcon={<ClearIcon />}
-                    onClick={handleClearSignature}
-                >
-                    Очистить подпись
-                </Button>
+                <Box>
+                    <Button
+                        variant="contained"
+                        color="success"
+                        startIcon={<SendIcon />}
+                        onClick={handleSendSignedPDF}
+                        sx={{ mr: 2 }}
+                    >
+                        Отправить
+                    </Button>
+
+                    <Button
+                        variant="outlined"
+                        color="secondary"
+                        startIcon={<ClearIcon />}
+                        onClick={handleClearSignature}
+                    >
+                        Очистить подпись
+                    </Button>
+                </Box>
             </Box>
         </Box>
     );

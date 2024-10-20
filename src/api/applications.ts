@@ -143,3 +143,15 @@ export const uploadDocument = async (applicationId: number, file: File): Promise
     });
     return response.data;
 };
+
+export const completeApplication = async (applicationId: number, file: Blob): Promise<IApplicationResponse> => {
+    const formData = new FormData();
+    formData.append('ready_document', file);
+
+    const response = await apiInstance.post(`/applications/list/${applicationId}/complete/`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+    return response.data;
+};
