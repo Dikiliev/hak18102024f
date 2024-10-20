@@ -110,7 +110,7 @@ const SubmitApplicationForm: React.FC = () => {
                 </Typography>
 
                 <Box component="form" onSubmit={handleSubmit}>
-                    <Grid container spacing={4}>
+                    <Grid container spacing={2}>
                         {data?.fields.map((field) => (
                             <Grid item xs={12} key={field.id}>
                                 {field.field_type === 'text' && (
