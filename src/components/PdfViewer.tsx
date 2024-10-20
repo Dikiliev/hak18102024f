@@ -9,6 +9,7 @@ import {
     IconButton,
     Paper,
     CircularProgress,
+    Slider,
 } from '@mui/material';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
@@ -17,7 +18,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import ClearIcon from '@mui/icons-material/Clear';
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 interface PDFViewerProps {
     url: string;
@@ -28,7 +29,7 @@ interface PDFViewerProps {
 
 const PDFViewer: React.FC<PDFViewerProps> = ({
                                                  url,
-                                                 signatureImageUrl,
+                                                 signatureImageUrl, // Получаем URL изображения подписи
                                                  initialPage = 1,
                                                  initialScale = 1,
                                              }) => {
@@ -40,6 +41,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
         y: number;
     } | null>(null);
     const [signatureImage, setSignatureImage] = useState<HTMLImageElement | null>(null);
+    const [signatureScale, setSignatureScale] = useState<number>(0.5); // Изначально масштаб 0.5
     const [pdfBytes, setPdfBytes] = useState<ArrayBuffer | null>(null);
     const viewerRef = useRef<HTMLDivElement | null>(null);
     const [pageDimensions, setPageDimensions] = useState<{
@@ -135,12 +137,15 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
         const { width, height } = page.getSize();
         const pdfScale = width / (pageDimensions?.width || width);
 
-        // Вычисляем размеры подписи в PDF
-        const signatureWidth = (signatureImage.width / (pageDimensions?.width || 1)) * width;
-        const signatureHeight = (signatureImage.height / (pageDimensions?.height || 1)) * height;
+        // Вычисляем размеры подписи в PDF, учитывая signatureScale
+        const signatureWidth =
+            (signatureImage.width / (pageDimensions?.width || 1)) * width * signatureScale;
+        const signatureHeight =
+            (signatureImage.height / (pageDimensions?.height || 1)) * height * signatureScale;
 
-        const x = signaturePosition.x * pdfScale;
-        const y = height - signaturePosition.y * pdfScale - signatureHeight;
+        // Центрируем подпись на месте клика
+        const x = signaturePosition.x * pdfScale - signatureWidth / 2;
+        const y = height - signaturePosition.y * pdfScale - signatureHeight / 2;
 
         page.drawImage(embeddedSignatureImage, {
             x: x,
@@ -156,6 +161,11 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
 
     const handleClearSignature = () => {
         setSignaturePosition(null);
+    };
+
+    // Функция для изменения масштаба подписи
+    const handleSignatureScaleChange = (event: Event, newValue: number | number[]) => {
+        setSignatureScale(newValue as number);
     };
 
     return (
@@ -230,10 +240,14 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
                         <Box
                             sx={{
                                 position: 'absolute',
-                                top: signaturePosition.y * pageScale,
-                                left: signaturePosition.x * pageScale,
-                                width: `${signatureImage.width * pageScale}px`,
-                                height: `${signatureImage.height * pageScale}px`,
+                                top:
+                                    signaturePosition.y * pageScale -
+                                    (signatureImage.height * pageScale * signatureScale) / 2,
+                                left:
+                                    signaturePosition.x * pageScale -
+                                    (signatureImage.width * pageScale * signatureScale) / 2,
+                                width: `${signatureImage.width * pageScale * signatureScale}px`,
+                                height: `${signatureImage.height * pageScale * signatureScale}px`,
                                 zIndex: 1,
                             }}
                         >
@@ -281,6 +295,30 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
                         <ZoomOutIcon />
                     </IconButton>
                 </Box>
+            </Box>
+
+            {/* Контролы для изменения размера подписи */}
+            <Box
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    mb: 2,
+                }}
+            >
+                <Typography variant="body1" sx={{ mr: 2 }}>
+                    Размер подписи:
+                </Typography>
+                <Slider
+                    value={signatureScale}
+                    onChange={handleSignatureScaleChange}
+                    min={0.1}
+                    max={2}
+                    step={0.1}
+                    sx={{ width: 200 }}
+                />
+                <Typography variant="body2" sx={{ ml: 2 }}>
+                    {Math.round(signatureScale * 100)}%
+                </Typography>
             </Box>
 
             <Box
