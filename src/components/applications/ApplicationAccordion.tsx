@@ -17,7 +17,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import {useMutation} from "@tanstack/react-query"; // Проверьте, правильно ли реализована эта функция
 
 interface ApplicationAccordionProps {
-    application: IApplicationResponse; 
+    application: IApplicationResponse;
     expanded: number | false;
     index: number;
     handleAccordionChange:  (event: React.SyntheticEvent, expanded: boolean) => void;
@@ -72,63 +72,64 @@ const ApplicationAccordion: React.FC<ApplicationAccordionProps> = ({
     };
 
     return (
-        <Accordion
-            key={application.id}
-            expanded={expanded === index}
-            onChange={handleAccordionChange}
-            sx={{ borderRadius: 1, mb: 2, backgroundColor: theme.palette.background.paper, overflow: 'hidden' }}
-        >
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Grid container alignItems="center" spacing={2}>
-                    <Grid item xs={6}>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                            {application.application_type.name}
-                        </Typography>
+        <Box sx={{ py: 1 }}>
+            <Accordion
+                expanded={expanded === index}
+                onChange={handleAccordionChange}
+                sx={{ borderRadius: 1, backgroundColor: theme.palette.background.paper, overflow: 'hidden' }}
+            >
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Grid container alignItems="center" spacing={2}>
+                        <Grid item xs={6}>
+                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                {application.application_type.name}
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={3}>
+                            {renderStatusChip(application.status)}
+                        </Grid>
+                        <Grid item xs={3}>
+                            <Typography variant="body2" color="textSecondary">
+                                {new Date(application.submission_date).toLocaleDateString()}
+                            </Typography>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={3}>
-                        {renderStatusChip(application.status)}
-                    </Grid>
-                    <Grid item xs={3}>
-                        <Typography variant="body2" color="textSecondary">
-                            {new Date(application.submission_date).toLocaleDateString()}
-                        </Typography>
-                    </Grid>
-                </Grid>
-            </AccordionSummary>
+                </AccordionSummary>
 
-            <AccordionDetails>
-                <Box mb={2}>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Детали заявления:</Typography>
-                    {Object.entries(application.fields_data).map(([field, value], idx) => (
-                        <Box key={idx} mb={2}>
-                            <Typography>{field}:</Typography>
-                            {typeof value === 'string' && isImage(value) ? (
-                                <Box
-                                    component="img"
-                                    src={getAbsoluteUrl(value)}
-                                    alt={field}
-                                    sx={{
-                                        width: 'auto',
-                                        height: 200,
-                                        objectFit: 'contain',
-                                        borderRadius: 1,
-                                        boxShadow: 1,
-                                    }}
-                                />
-                            ) : isDocument(value) ? (
-                                <Button variant="contained" onClick={() => handleDownload(value)}>
-                                    Скачать документ
-                                </Button>
-                            ) : (
-                                <Typography>{value}</Typography>
-                            )}
-                        </Box>
-                    ))}
-                </Box>
+                <AccordionDetails>
+                    <Box mb={2}>
+                        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Детали заявления:</Typography>
+                        {Object.entries(application.fields_data).map(([field, value], idx) => (
+                            <Box key={idx} mb={2}>
+                                <Typography color={'secondary'}  variant={'body1'}>{field}:</Typography>
+                                {typeof value === 'string' && isImage(value) ? (
+                                    <Box
+                                        component="img"
+                                        src={getAbsoluteUrl(value)}
+                                        alt={field}
+                                        sx={{
+                                            width: 'auto',
+                                            height: 200,
+                                            objectFit: 'contain',
+                                            borderRadius: 1,
+                                            boxShadow: 1,
+                                        }}
+                                    />
+                                ) : isDocument(value) ? (
+                                    <Button variant="text" onClick={() => handleDownload(value)}>
+                                        Скачать документ ({value.split('/')[value.split('/').length - 1]})
+                                    </Button>
+                                ) : (
+                                    <Typography variant={'body1'}>{value}</Typography>
+                                )}
+                            </Box>
+                        ))}
+                    </Box>
 
-                {children}
-            </AccordionDetails>
-        </Accordion>
+                    {children}
+                </AccordionDetails>
+            </Accordion>
+        </Box>
     );
 };
 

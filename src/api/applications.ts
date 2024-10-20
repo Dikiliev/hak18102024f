@@ -1,4 +1,6 @@
 import { apiInstance } from "@api/index";
+import axios from 'axios';
+import { API_URL, BASE_URL } from '../utils/constans.ts';
 
 // Интерфейсы для ответа API
 interface IApplicationTypeResponse {
@@ -102,9 +104,10 @@ export const revokeApplication = async (applicationId: number): Promise<any> => 
 
 // Скачивание готового документа
 export const downloadApplication = async (documentUrl: string): Promise<void> => {
-    const response = await apiInstance.get(documentUrl, {
+    const response = await axios.get(BASE_URL + documentUrl, {
         responseType: 'blob', // Ожидаем файл в ответе
     });
+
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
     link.href = url;

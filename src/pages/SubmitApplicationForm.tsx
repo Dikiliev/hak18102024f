@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import {Container, Grid, Typography, TextField, Button, CircularProgress, Alert, Box, Paper} from '@mui/material';
+import { Container, Grid, Typography, Button, CircularProgress, Alert, Box, Paper, TextField } from '@mui/material';
 import { fetchApplicationType, submitApplication } from '../api/applications';
 import { useParams, useNavigate } from 'react-router-dom';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload'; // Иконка загрузки
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'; // Иконка успешной загрузки
 
 interface ApplicationField {
     id: number;
@@ -26,6 +28,7 @@ const SubmitApplicationForm: React.FC = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState<{ [key: string]: string }>({});
     const [fileData, setFileData] = useState<{ [key: string]: File }>({});
+    const [filePreview, setFilePreview] = useState<{ [key: string]: string }>({}); // Для превью выбранных файлов
 
     // Fetching application type and fields
     const { data, isLoading, isError, error } = useQuery<ApplicationType, Error>({
@@ -71,6 +74,10 @@ const SubmitApplicationForm: React.FC = () => {
             ...prevData,
             [name]: file,
         }));
+        setFilePreview((prevPreview) => ({
+            ...prevPreview,
+            [name]: file.name, // Отображаем имя файла после выбора
+        }));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -82,7 +89,7 @@ const SubmitApplicationForm: React.FC = () => {
 
         // Поля текстовых данных. Упаковываем их в JSON перед добавлением
         const fieldsData = {
-            ...formData
+            ...formData,
         };
         formSubmissionData.append('fields_data', JSON.stringify(fieldsData));
 
@@ -90,9 +97,6 @@ const SubmitApplicationForm: React.FC = () => {
         Object.keys(fileData).forEach((key) => {
             formSubmissionData.append(key, fileData[key]);
         });
-
-        // Выводим для проверки
-        console.log([...formSubmissionData.entries()]);
 
         // Отправляем запрос через React Query
         mutation.mutate(formSubmissionData);
@@ -105,7 +109,7 @@ const SubmitApplicationForm: React.FC = () => {
                     Заполните заявление
                 </Typography>
 
-                <Box component={'form'} onSubmit={handleSubmit}>
+                <Box component="form" onSubmit={handleSubmit}>
                     <Grid container spacing={4}>
                         {data?.fields.map((field) => (
                             <Grid item xs={12} key={field.id}>
@@ -118,41 +122,44 @@ const SubmitApplicationForm: React.FC = () => {
                                     />
                                 )}
 
-                                {field.field_type === 'document' && (
+                                {(field.field_type === 'document' || field.field_type === 'image' || field.field_type === 'signature') && (
                                     <>
-                                        <Typography variant="body1">{field.name} (PDF, DOC)</Typography>
+                                        <Typography variant="body1" sx={{ mb: 1 }}>
+                                            {field.name}
+                                        </Typography>
                                         {field.template && (
                                             <Button variant="outlined" href={field.template} target="_blank" sx={{ mb: 2 }}>
                                                 Скачать шаблон
                                             </Button>
                                         )}
-                                        <input
-                                            type="file"
-                                            accept=".pdf,.doc,.docx"
-                                            onChange={(e) => handleFileChange(field.name, e.target.files![0])}
-                                        />
-                                    </>
-                                )}
 
-                                {field.field_type === 'image' && (
-                                    <>
-                                        <Typography variant="body1">{field.name} (JPG, PNG)</Typography>
-                                        <input
-                                            type="file"
-                                            accept=".jpg,.png"
-                                            onChange={(e) => handleFileChange(field.name, e.target.files![0])}
-                                        />
-                                    </>
-                                )}
+                                        <label htmlFor={`file-input-${field.id}`}>
+                                            <input
+                                                style={{ display: 'none' }}
+                                                id={`file-input-${field.id}`}
+                                                type="file"
+                                                accept={field.field_type === 'document' ? '.pdf,.doc,.docx' : '.jpg,.png'}
+                                                onChange={(e) => handleFileChange(field.name, e.target.files![0])}
+                                            />
+                                            <Button
+                                                component="span"
+                                                variant="contained"
+                                                color="primary"
+                                                startIcon={<CloudUploadIcon />}
+                                                fullWidth
+                                                sx={{ mb: 2 }}
+                                            >
+                                                {filePreview[field.name] ? 'Файл выбран' : 'Загрузить файл'}
+                                            </Button>
+                                        </label>
 
-                                {field.field_type === 'signature' && (
-                                    <>
-                                        <Typography variant="body1">{field.name} (Загрузить подпись)</Typography>
-                                        <input
-                                            type="file"
-                                            accept=".jpg,.png"
-                                            onChange={(e) => handleFileChange(field.name, e.target.files![0])}
-                                        />
+                                        {/* Отображение имени файла после выбора */}
+                                        {filePreview[field.name] && (
+                                            <Typography variant="body2" color="textSecondary">
+                                                <CheckCircleIcon sx={{ verticalAlign: 'middle', mr: 1 }} />
+                                                {filePreview[field.name]}
+                                            </Typography>
+                                        )}
                                     </>
                                 )}
                             </Grid>

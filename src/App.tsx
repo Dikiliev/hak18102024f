@@ -22,7 +22,7 @@ import SubmitApplicationForm from "@pages/SubmitApplicationForm";
 import SuccessPage from "@pages/SuccessPage";
 import ApplicationListPage from "@pages/ApplicationListPage";
 import ProrectorPage from "./pages/ProrectorPage";
-import SupportPage from './pages/SupportPage/SupportPage.tsx';
+import SupportPage from './pages/SupportPage/SupportPage';
 
 const BaseLayout: React.FC = () => {
     const location = useLocation();
