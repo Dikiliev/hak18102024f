@@ -58,6 +58,11 @@ export const fetchProrectorApplications = async (): Promise<IApplicationResponse
     return response.data;
 };
 
+export const fetchReviewApplications = async (): Promise<IApplicationResponse[]> => {
+    const response = await apiInstance.get('/applications/list-for-preview/'); // Маршрут к API
+    return response.data;
+};
+
 interface ISignApplicationResponse {
     id: number;
     status: string;
@@ -87,15 +92,6 @@ interface IRejectApplicationResponse {
     status: string;
 }
 
-export const rejectApplication = async (applicationId: number, rejectionComment: string): Promise<IRejectApplicationResponse> => {
-    const response = await apiInstance.patch(`/applications/list/${applicationId}/reject/`, {
-        status: 'rejected',  // Изменяем статус на "отклонено"
-        prorector_comment: rejectionComment, // Добавляем комментарий проректора
-    });
-
-    return response.data;
-};
-
 // Отзыв заявления
 export const revokeApplication = async (applicationId: number): Promise<any> => {
     const response = await apiInstance.post(`/applications/list/${applicationId}/revoke/`);
@@ -115,4 +111,31 @@ export const downloadApplication = async (documentUrl: string): Promise<void> =>
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link); // Удаляем ссылку после скачивания
+};
+
+
+
+export const acceptApplication = async (applicationId: number): Promise<IApplicationResponse> => {
+    const response = await apiInstance.post(`/applications/list/${applicationId}/accept/`);
+    return response.data;
+};
+
+export const rejectApplication = async (applicationId: number, comment: string): Promise<IApplicationResponse> => {
+    const formData = new FormData();
+    formData.append('comment', comment);
+
+    const response = await apiInstance.post(`/applications/list/${applicationId}/reject/`, formData);
+    return response.data;
+};
+
+export const uploadDocument = async (applicationId: number, file: File): Promise<IApplicationResponse> => {
+    const formData = new FormData();
+    formData.append('sent_document', file);
+
+    const response = await apiInstance.post(`/applications/list/${applicationId}/upload_document/`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+    return response.data;
 };

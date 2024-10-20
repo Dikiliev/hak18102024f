@@ -23,6 +23,7 @@ import SuccessPage from "@pages/SuccessPage";
 import ApplicationListPage from "@pages/ApplicationListPage";
 import ProrectorPage from "./pages/ProrectorPage";
 import SupportPage from './pages/SupportPage/SupportPage';
+import ReviewerPage from './pages/ReviewerPage';
 
 const BaseLayout: React.FC = () => {
     const location = useLocation();
@@ -55,7 +56,7 @@ const App: React.FC = () => {
 
                         <Route path='prorector' element={<ProrectorPage />} />
 
-                        <Route path='reviewer' element={<ProrectorPage />} />
+                        <Route path='reviewer' element={<ReviewerPage />} />
 
                         <Route path='chat' element={<SupportPage />} />
 

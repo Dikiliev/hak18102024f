@@ -39,6 +39,12 @@ const studentNavigates = [
         url: '/applications'
     },
 ]
+const reviewerNavigates = [
+    {
+        text: 'Проверка заявлении',
+        url: '/reviewer'
+    },
+]
 const prorectorNavigates = [
     {
         text: 'Заявления',
@@ -120,6 +126,12 @@ const Header: React.FC = observer(() => {
                             {authStore.isAuthenticated ? (
                                 <>
                                     {authStore.user?.role == "student" && studentNavigates.map((item) => (
+                                        <Typography key={item.text} variant='body1' component='a' href={item.url} sx={{ cursor: 'pointer', textDecoration: 'none', color: 'text.primary' }}>
+                                            {item.text}
+                                        </Typography>
+                                    ))}
+
+                                    {authStore.user?.role == "reviewer" && reviewerNavigates.map((item) => (
                                         <Typography key={item.text} variant='body1' component='a' href={item.url} sx={{ cursor: 'pointer', textDecoration: 'none', color: 'text.primary' }}>
                                             {item.text}
                                         </Typography>

@@ -74,7 +74,7 @@ const ProrectorPage: React.FC = () => {
         handleSetOpen(true)
     }
 
-    const pdfUrl = '/sample.pdf';
+    const pdfUrl = '/input.pdf';
     const { user } = useUser()
     const userSignatureUrl = user?.signature;
 

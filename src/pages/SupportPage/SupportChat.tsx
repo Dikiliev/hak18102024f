@@ -110,7 +110,7 @@ const SupportChat: React.FC = () => {
                             onChange={(e) => setInputValue(e.target.value)}
                             sx={{ mr: 1 }}
                         />
-                        <Button variant="contained" color="primary" onClick={handleSendMessage}>
+                        <Button variant="contained" color="primary" onClick={handleSendMessage} sx={{ px: 4 }}>
                             Отправить
                         </Button>
                     </Box>
