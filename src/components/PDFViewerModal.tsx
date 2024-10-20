@@ -21,6 +21,10 @@ const PDFViewerModal: React.FC<PDFViewerModalProps> = ({ isOpen, setClose, url, 
         setClose(false);
     };
 
+    const handleSent = () => {
+        handleClose();
+    }
+
     return (
         <Modal open={isOpen} onClose={handleClose}>
             <Box
@@ -59,6 +63,7 @@ const PDFViewerModal: React.FC<PDFViewerModalProps> = ({ isOpen, setClose, url, 
                     applicationId={applicationId} // Передаем applicationId
                     initialPage={1}
                     initialScale={1}
+                    onSent={handleSent}
                 />
             </Box>
         </Modal>

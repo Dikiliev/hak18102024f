@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
     Container,
     Typography,
@@ -37,18 +37,30 @@ const ProrectorPage: React.FC = () => {
     const [pdfUrl, setPdfUrl] = useState<string>('/input.pdf');
     const [selectedApplication, setSelectedApplication] = useState<IApplicationResponse | null>(null);
 
-    const { data, isLoading, isError, error } = useQuery({
+    const queryClient = useQueryClient();
+
+    const { data, isLoading, isError, error, refetch } = useQuery({
         queryKey: ['prorectorApplications'],
         queryFn: fetchProrectorApplications,
     });
 
     const signMutation = useMutation({
         mutationFn: (applicationId: number) => signApplication(applicationId, signatureFile),
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['reviewerApplications']});
+            refetch();
+        },
+
     });
 
     const rejectMutation = useMutation({
         mutationFn: ({ applicationId, comment }: { applicationId: number; comment: string }) =>
             rejectApplication(applicationId, comment),
+
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['reviewerApplications']});
+            refetch();
+        },
     });
 
     const handleAccordionChange = (panel: number) => (event: React.SyntheticEvent, isExpanded: boolean) => {
@@ -93,6 +105,7 @@ const ProrectorPage: React.FC = () => {
     const [open, setOpen] = useState(false);
     const handleSetOpen = (value: boolean) => {
         setOpen(value);
+        refetch();
     }
 
     const handleOpenSignature = (application: IApplicationResponse) => {
@@ -148,8 +161,8 @@ const ProrectorPage: React.FC = () => {
                             <ApplicationAccordion
                                 application={application}
                                 expanded={expanded}
-                                handleAccordionChange={handleAccordionChange(index)}
-                                index={index}
+                                handleAccordionChange={handleAccordionChange(application.id)}
+                                index={application.id}
                             >
                                 <Box display="flex" justifyContent="end" alignItems="center" gap={2}>
                                     <Button

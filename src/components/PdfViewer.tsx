@@ -29,6 +29,7 @@ interface PDFViewerProps {
     applicationId: number; // Новый проп для идентификатора заявления
     initialPage?: number;
     initialScale?: number;
+    onSent?: void;
 }
 
 const PDFViewer: React.FC<PDFViewerProps> = ({
@@ -37,6 +38,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
                                                  applicationId, // Используем applicationId
                                                  initialPage = 1,
                                                  initialScale = 1,
+                                                 onSent
                                              }) => {
     const [totalPages, setTotalPages] = useState(0);
     const [pageNumber, setPageNumber] = useState(initialPage);
@@ -164,6 +166,12 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
         saveAs(blob, 'signed_document.pdf');
     };
 
+    const handleSend = () => {
+        if (onSent) {
+            onSent();
+        }
+    };
+
     const handleSendSignedPDF = async () => {
         if (!pdfBytes || !signaturePosition || !signatureImage) {
             alert('Пожалуйста, выберите место для подписи перед отправкой.');
@@ -212,6 +220,8 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
                 },
             });
             alert('Документ успешно отправлен.');
+            handleSend();
+
         } catch (error) {
             console.error('Ошибка при отправке документа:', error);
             alert('Произошла ошибка при отправке документа.');

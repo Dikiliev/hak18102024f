@@ -33,7 +33,7 @@ const ReviewerPage: React.FC = () => {
 
     const queryClient = useQueryClient();
 
-    const { data, isLoading, isError, error } = useQuery({
+    const { data, isLoading, isError, error, refetch } = useQuery({
         queryKey: ['prorectorApplications'],
         queryFn: fetchReviewApplications,
     });
@@ -42,16 +42,17 @@ const ReviewerPage: React.FC = () => {
         mutationFn: acceptApplication,
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ['reviewerApplications']});
-
+            refetch();
         },
     });
 
     const rejectMutation = useMutation({
         mutationFn: ({ applicationId, comment }: { applicationId: number; comment: string }) =>
             rejectApplication(applicationId, comment),
+
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ['reviewerApplications']});
-
+            refetch();
         },
     });
 
