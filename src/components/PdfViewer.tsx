@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
-import SignatureCanvas from 'react-signature-canvas';
 import { PDFDocument } from 'pdf-lib';
 import saveAs from 'file-saver';
 import {
@@ -18,16 +17,18 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import ClearIcon from '@mui/icons-material/Clear';
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.mjs`;
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 
 interface PDFViewerProps {
     url: string;
+    signatureImageUrl: string; // Новый проп для URL изображения подписи
     initialPage?: number;
     initialScale?: number;
 }
 
 const PDFViewer: React.FC<PDFViewerProps> = ({
                                                  url,
+                                                 signatureImageUrl,
                                                  initialPage = 1,
                                                  initialScale = 1,
                                              }) => {
@@ -38,7 +39,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
         x: number;
         y: number;
     } | null>(null);
-    const signatureRef = useRef<SignatureCanvas>(null);
+    const [signatureImage, setSignatureImage] = useState<HTMLImageElement | null>(null);
     const [pdfBytes, setPdfBytes] = useState<ArrayBuffer | null>(null);
     const viewerRef = useRef<HTMLDivElement | null>(null);
     const [pageDimensions, setPageDimensions] = useState<{
@@ -57,6 +58,15 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
 
         loadPdf();
     }, [url]);
+
+    useEffect(() => {
+        // Загружаем изображение подписи
+        const img = new Image();
+        img.src = signatureImageUrl;
+        img.onload = () => {
+            setSignatureImage(img);
+        };
+    }, [signatureImageUrl]);
 
     const onDocumentLoadSuccess = ({ numPages }: any) => {
         setTotalPages(numPages);
@@ -83,9 +93,6 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
         if (pageNumber < totalPages) {
             setPageNumber(pageNumber + 1);
             setSignaturePosition(null);
-            if (signatureRef.current) {
-                signatureRef.current.clear();
-            }
         }
     };
 
@@ -93,9 +100,6 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
         if (pageNumber > 1) {
             setPageNumber(pageNumber - 1);
             setSignaturePosition(null);
-            if (signatureRef.current) {
-                signatureRef.current.clear();
-            }
         }
     };
 
@@ -114,13 +118,8 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
     };
 
     const handleDownloadSignedPDF = async () => {
-        if (
-            !pdfBytes ||
-            !signatureRef.current ||
-            !signaturePosition ||
-            signatureRef.current.isEmpty()
-        ) {
-            alert('Пожалуйста, добавьте подпись перед сохранением.');
+        if (!pdfBytes || !signaturePosition || !signatureImage) {
+            alert('Пожалуйста, выберите место для подписи перед сохранением.');
             return;
         }
 
@@ -128,22 +127,22 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
         const pages = pdfDoc.getPages();
         const page = pages[pageNumber - 1];
 
-        const signatureDataURL = signatureRef.current.toDataURL('image/png');
-        const signatureImageBytes = await fetch(signatureDataURL).then((res) =>
-            res.arrayBuffer()
-        );
-        const signatureImage = await pdfDoc.embedPng(signatureImageBytes);
+        // Получаем байты изображения подписи
+        const response = await fetch(signatureImageUrl);
+        const signatureImageBytes = await response.arrayBuffer();
+        const embeddedSignatureImage = await pdfDoc.embedPng(signatureImageBytes);
 
         const { width, height } = page.getSize();
         const pdfScale = width / (pageDimensions?.width || width);
 
-        const signatureWidth = (150 / (pageDimensions?.width || 1)) * width;
-        const signatureHeight = (50 / (pageDimensions?.height || 1)) * height;
+        // Вычисляем размеры подписи в PDF
+        const signatureWidth = (signatureImage.width / (pageDimensions?.width || 1)) * width;
+        const signatureHeight = (signatureImage.height / (pageDimensions?.height || 1)) * height;
 
         const x = signaturePosition.x * pdfScale;
         const y = height - signaturePosition.y * pdfScale - signatureHeight;
 
-        page.drawImage(signatureImage, {
+        page.drawImage(embeddedSignatureImage, {
             x: x,
             y: y,
             width: signatureWidth,
@@ -156,10 +155,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
     };
 
     const handleClearSignature = () => {
-        if (signatureRef.current) {
-            signatureRef.current.clear();
-            setSignaturePosition(null);
-        }
+        setSignaturePosition(null);
     };
 
     return (
@@ -230,28 +226,24 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
                         />
                     </Document>
 
-                    {signaturePosition && (
+                    {signaturePosition && signatureImage && (
                         <Box
                             sx={{
                                 position: 'absolute',
                                 top: signaturePosition.y * pageScale,
                                 left: signaturePosition.x * pageScale,
-                                border: '2px solid #3f51b5',
-                                borderRadius: '4px',
-                                width: `${150 * pageScale}px`,
-                                height: `${50 * pageScale}px`,
+                                width: `${signatureImage.width * pageScale}px`,
+                                height: `${signatureImage.height * pageScale}px`,
                                 zIndex: 1,
-                                overflow: 'hidden',
                             }}
                         >
-                            <SignatureCanvas
-                                penColor="black"
-                                canvasProps={{
-                                    width: 150,
-                                    height: 50,
-                                    className: 'sigCanvas',
+                            <img
+                                src={signatureImageUrl}
+                                alt="Подпись"
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
                                 }}
-                                ref={signatureRef}
                             />
                         </Box>
                     )}
