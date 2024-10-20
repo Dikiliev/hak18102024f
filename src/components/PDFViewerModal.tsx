@@ -10,31 +10,21 @@ import CloseIcon from '@mui/icons-material/Close';
 import PDFViewer from './PdfViewer';
 
 interface PDFViewerModalProps {
+    isOpen: boolean;
+    setClose: (value: boolean) => void;
     url: string;
     signatureImageUrl: string;
+
 }
 
-const PDFViewerModal: React.FC<PDFViewerModalProps> = ({
-                                                           url,
-                                                           signatureImageUrl,
-                                                       }) => {
-    const [open, setOpen] = useState(false);
-
-    const handleOpen = () => {
-        setOpen(true);
-    };
-
+const PDFViewerModal: React.FC<PDFViewerModalProps> = ({ isOpen, setClose, url, signatureImageUrl}) => {
     const handleClose = () => {
-        setOpen(false);
-    };
+        setClose(false);
+    }
 
     return (
         <>
-            <Button variant="contained" color="primary" onClick={handleOpen}>
-        Открыть документ для подписи
-    </Button>
-
-    <Modal open={open} onClose={handleClose}>
+    <Modal open={isOpen} onClose={handleClose}>
     <Box
         sx={{
         position: 'absolute' as 'absolute',

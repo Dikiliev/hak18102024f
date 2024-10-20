@@ -55,6 +55,8 @@ const App: React.FC = () => {
 
                         <Route path='prorector' element={<ProrectorPage />} />
 
+                        <Route path='reviewer' element={<ProrectorPage />} />
+
                         <Route path='chat' element={<SupportPage />} />
 
                         <Route path='profile' element={<ProfilePage />} />

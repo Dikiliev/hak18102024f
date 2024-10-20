@@ -12,12 +12,12 @@ import {
 import {
     fetchProrectorApplications,
     signApplication,
-    rejectApplication,
+    rejectApplication, IApplicationResponse,
 } from './../api/applications';
 import ApplicationAccordion from "../components/applications/ApplicationAccordion";
 import SignatureField from './SignatureField';
-import PDFViewerModal from '../components/PDFViewerModal.tsx';
-import { useUser } from '../hooks/useUser.ts';
+import PDFViewerModal from '../components/PDFViewerModal';
+import { useUser } from '../hooks/useUser';
 
 
 const ProrectorPage: React.FC = () => {
@@ -65,13 +65,19 @@ const ProrectorPage: React.FC = () => {
 
 
     const [open, setOpen] = useState(false);
+    const handleSetOpen = (value: boolean) => {
+        setOpen(value);
 
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    }
+
+    const handleOpenSignature = (application: IApplicationResponse) => {
+        handleSetOpen(true)
+    }
 
     const pdfUrl = '/sample.pdf';
     const { user } = useUser()
     const userSignatureUrl = user?.signature;
+
 
 
     if (isLoading) {
@@ -104,7 +110,7 @@ const ProrectorPage: React.FC = () => {
 
                 <SignatureField/>
 
-                <PDFViewerModal url={pdfUrl} signatureImageUrl={userSignatureUrl} />
+                <PDFViewerModal isOpen={open} setClose={handleSetOpen} url={pdfUrl} signatureImageUrl={userSignatureUrl} />
 
                 <Box sx={{mt: 2}}>
                     {data?.map((application, index) => (
@@ -127,7 +133,7 @@ const ProrectorPage: React.FC = () => {
                                     <Button
                                         variant="contained"
                                         color="primary"
-                                        onClick={() => handleSign(application.id)}
+                                        onClick={() => handleOpenSignature(application)}
                                         sx={{ mr: 2 }}
                                     >
                                         Подписать заявление

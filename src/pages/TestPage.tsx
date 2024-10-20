@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 
-import PDFViewer from '../components/PdfViewer.tsx';
-import { useUser } from '../hooks/useUser.ts';
+import PDFViewer from '../components/PdfViewer';
+import { useUser } from '../hooks/useUser';
 import { CircularProgress } from '@mui/material';
 
 
