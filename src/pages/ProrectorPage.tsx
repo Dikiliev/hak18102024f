@@ -16,6 +16,8 @@ import {
 } from './../api/applications';
 import ApplicationAccordion from "../components/applications/ApplicationAccordion";
 import SignatureField from './SignatureField';
+import PDFViewerModal from '../components/PDFViewerModal.tsx';
+import { useUser } from '../hooks/useUser.ts';
 
 
 const ProrectorPage: React.FC = () => {
@@ -67,6 +69,10 @@ const ProrectorPage: React.FC = () => {
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
+    const pdfUrl = '/sample.pdf';
+    const { user } = useUser()
+    const userSignatureUrl = user?.signature;
+
 
     if (isLoading) {
         return (
@@ -85,6 +91,10 @@ const ProrectorPage: React.FC = () => {
         );
     }
 
+    if (!userSignatureUrl) {
+        return <CircularProgress />;
+    }
+
     return (
         <Box>
             <Container maxWidth="md" sx={{ py: 6 }}>
@@ -93,6 +103,8 @@ const ProrectorPage: React.FC = () => {
                 </Typography>
 
                 <SignatureField/>
+
+                <PDFViewerModal url={pdfUrl} signatureImageUrl={userSignatureUrl} />
 
                 <Box sx={{mt: 2}}>
                     {data?.map((application, index) => (

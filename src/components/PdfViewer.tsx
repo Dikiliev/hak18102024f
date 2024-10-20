@@ -18,7 +18,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import ClearIcon from '@mui/icons-material/Clear';
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 
 interface PDFViewerProps {
     url: string;
@@ -169,26 +169,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
     };
 
     return (
-        <Box sx={{ p: 3 }}>
-            <Paper
-                sx={{
-                    p: 2,
-                    mb: 3,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}
-            >
-                <Typography
-                    variant="h5"
-                    component="h2"
-                    gutterBottom
-                    sx={{ fontWeight: 'bold' }}
-                >
-                    Просмотр и подписание PDF
-                </Typography>
-            </Paper>
-
+        <Box display={'flex'} flexDirection={'column'} justifyContent='center' alignItems='center'>
             {loading ? (
                 <Box
                     sx={{
@@ -302,7 +283,6 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
                 sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    mb: 2,
                 }}
             >
                 <Typography variant="body1" sx={{ mr: 2 }}>
@@ -326,7 +306,8 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    mt: 4,
+                    gap: 2,
+                    mt: 2,
                 }}
             >
                 <Button
