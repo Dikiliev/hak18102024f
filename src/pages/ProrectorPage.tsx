@@ -7,6 +7,11 @@ import {
     Button,
     CircularProgress,
     Alert,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    TextField,
 } from '@mui/material';
 
 import {
@@ -19,11 +24,15 @@ import SignatureField from './SignatureField';
 import PDFViewerModal from '../components/PDFViewerModal';
 import { useUser } from '../hooks/useUser';
 
-
 const ProrectorPage: React.FC = () => {
     const [expanded, setExpanded] = useState<number | false>(false);
     const [signatureFile, setSignatureFile] = useState<File | null>(null);
     const [documentFile, setDocumentFile] = useState<File | null>(null);
+
+    // Состояния для диалога отклонения
+    const [selectedApplicationId, setSelectedApplicationId] = useState<number | null>(null);
+    const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+    const [rejectComment, setRejectComment] = useState('');
 
     const { data, isLoading, isError, error } = useQuery({
         queryKey: ['prorectorApplications'],
@@ -35,13 +44,13 @@ const ProrectorPage: React.FC = () => {
     });
 
     const rejectMutation = useMutation({
-        mutationFn: (applicationId: number) => rejectApplication(applicationId, 'Не правильно'),
+        mutationFn: ({ applicationId, comment }: { applicationId: number; comment: string }) =>
+            rejectApplication(applicationId, comment),
     });
 
     const handleAccordionChange = (panel: number) => (event: React.SyntheticEvent, isExpanded: boolean) => {
         setExpanded(isExpanded ? panel : false);
     };
-
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -59,26 +68,37 @@ const ProrectorPage: React.FC = () => {
         signMutation.mutate(applicationId);
     };
 
+    // Обработка отклонения заявления
     const handleReject = (applicationId: number) => {
-        rejectMutation.mutate(applicationId);
+        setSelectedApplicationId(applicationId);
+        setRejectDialogOpen(true);
     };
 
+    const handleRejectConfirm = () => {
+        if (selectedApplicationId !== null) {
+            rejectMutation.mutate({ applicationId: selectedApplicationId, comment: rejectComment });
+        }
+        setRejectDialogOpen(false);
+        setRejectComment('');
+    };
+
+    const handleRejectCancel = () => {
+        setRejectDialogOpen(false);
+        setRejectComment('');
+    };
 
     const [open, setOpen] = useState(false);
     const handleSetOpen = (value: boolean) => {
         setOpen(value);
-
     }
 
     const handleOpenSignature = (application: IApplicationResponse) => {
-        handleSetOpen(true)
+        handleSetOpen(true);
     }
 
     const pdfUrl = '/input.pdf';
-    const { user } = useUser()
+    const { user } = useUser();
     const userSignatureUrl = user?.signature;
-
-
 
     if (isLoading) {
         return (
@@ -144,6 +164,29 @@ const ProrectorPage: React.FC = () => {
                     ))}
                 </Box>
             </Container>
+
+            {/* Диалог отклонения */}
+            <Dialog open={rejectDialogOpen} onClose={handleRejectCancel}>
+                <DialogTitle>Отклонить заявление</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        label="Комментарий"
+                        type="text"
+                        fullWidth
+                        variant="standard"
+                        value={rejectComment}
+                        onChange={(e) => setRejectComment(e.target.value)}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleRejectCancel}>Отмена</Button>
+                    <Button onClick={handleRejectConfirm} color="error">
+                        Отклонить
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };

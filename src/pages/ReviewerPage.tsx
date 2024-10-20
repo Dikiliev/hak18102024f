@@ -42,6 +42,7 @@ const ReviewerPage: React.FC = () => {
         mutationFn: acceptApplication,
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ['reviewerApplications']});
+
         },
     });
 
@@ -50,6 +51,7 @@ const ReviewerPage: React.FC = () => {
             rejectApplication(applicationId, comment),
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ['reviewerApplications']});
+
         },
     });
 
