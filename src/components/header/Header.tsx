@@ -106,7 +106,7 @@ const Header: React.FC = observer(() => {
                     {/*</Toolbar>*/}
                 </Container>
 
-                <Container maxWidth='xl'>
+                <Container maxWidth='lg'>
                     <Toolbar disableGutters sx={{ gap: 3 }}>
                         <Logo className={styles.logo} onClick={() => navigate('/')} />
 

@@ -35,15 +35,22 @@ const Home = () => {
                 <Container maxWidth="lg">
                     <Paper
                         sx={{
-                            borderRadius: '40px 10px 60px 30px', // Начальное состояние радиусов
-                            animation: 'borderAnimation 10s infinite alternate', // Анимация для смены радиусов
+
+                            borderRadius: '240px 72px 240px 72px',
+                            animation: 'borderAnimation 10s infinite ease-in-out',
                             overflow: 'hidden',
                             '@keyframes borderAnimation': {
                                 '0%': {
                                     borderRadius: '240px 72px 240px 72px',
                                 },
+                                '25%': {
+                                    borderRadius: '260px 90px 230px 60px',
+                                },
                                 '50%': {
                                     borderRadius: '280px 48px 280px 48px',
+                                },
+                                '75%': {
+                                    borderRadius: '260px 90px 230px 60px',
                                 },
                                 '100%': {
                                     borderRadius: '240px 72px 240px 72px',
